@@ -1,0 +1,61 @@
+#!/bin/bash
+
+#Hana McVicker
+
+#11/14/22
+
+#Project 4 Part 3
+
+#This script takes a file with a list of URLs as the second argument
+#and measures each webpage using the script measurepage and script urllist.
+#The script measures the index numbers of the URLs and the page-size
+#from measurepage and is put into an ouput file specified by the first argument
+#provided by the user
+
+#if there are fewer than 2 arguments provided, print a usage note to stderr w exit code 1
+if [ "$#" -lt 2 ] 
+then 
+  echo "Usage: output filename html filename " 1>&2
+  exit 1
+fi
+
+#Check if inputted html file exists , print error message if  it does not
+if [ ! -f "$2" ]
+then
+   echo "./geturls error: $2 does not exist " 1>&2
+   exit 1
+fi
+
+#If output file  does not exist,create it
+if [ ! -f "$1" ]
+then
+    touch "$1"
+#file already exists, file is replaced
+elif [ -f "$1" ]
+then
+   echo "./geturls warning: $1 already exists " 1>&2
+    > "$1"
+fi
+
+#current directory to path
+PATH=$PATH:.
+
+# For each url in the provided file,performs the word count measurement
+# If there are no words, ouputs a failure message, if there is at least
+# 1 word, outputs successful and puts the index and wordcount of the file
+# into the output file
+LINES=$(cat $2)
+i=0;
+for LINE in $LINES
+do
+   echo "Performing word count measurement on $LINE..."
+   WORDCOUNT=$(measurepage "$LINE")
+   if [ "$WORDCOUNT" -eq 0 ]
+   then
+     echo "...failure"
+   else
+     echo "...successful"
+     ((i=i+1))
+      echo "$i $WORDCOUNT" >> "$1"
+    fi 
+done
