@@ -1,0 +1,31 @@
+# !/bin/bash
+
+# Hana McVicker
+
+# 11/14/22
+
+# Project 4 Part 2
+
+# This script takes a URL as an argument and outputs the
+# size of the corresponding page in words
+
+# If the user does not provide any arguments,
+# prints error message with a return code of 1
+if [ "$#" -lt 1 ] 
+then 
+  echo "Usage: output filename html filename " 1>&2
+  exit 1
+fi
+
+# current directory to path
+PATH=$PATH:.
+
+# If the user provides erroneous argument or if downloading the requested
+# page fails for any other reason the script will print "0"
+# If the page is downloaded successfully, the script exits with a
+# return code of 0 after printing the number to standard output
+    TMPFILE=`mktemp`
+    wget -O TMPFILE "$1" >& /dev/null
+    wordcount -w TMPFILE
+    rm TMPFILE
+    exit 0

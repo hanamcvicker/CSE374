@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#Hana McVicker 1960220
+#10/21/2022
+#CSE374 Homework 2
+#Question1 Combine
+# this script concatanates files into an output file that is not already created
+
+ 
+# if less than two files given
+if [ "$#" -lt 2 ] 
+then 
+  echo "Usage: combine outputfilename [inputfilename...]" 1>&2
+  exit 1
+  
+#if file/directory  already exists
+elif [ -d "$1" ] || [ -f "$1" ]   
+then
+  echo "Error: Output file should not exist" 1>&2
+  exit 1
+
+#else, concatenate the contents and put them in first file and do not print any error messages from this, put in first outputfile,  return code 0
+else
+    OUTPUT="$1"
+    touch "$OUTPUT"
+    shift
+    cat "$@" >> "$OUTPUT" 2>&1 
+fi
+exit 0
