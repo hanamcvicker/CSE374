@@ -1,0 +1,60 @@
+#!/bin/bash
+
+#Hana McVicker 1960220
+#10/21/2022
+#Spell Check Script
+#CSE374 Homework 2 Scripting
+#This script reads each word in a file and compares thatword to the dictionary. If they word is not found
+#in the dictionary, it is added to the end of a file called <FILE>.spelling
+
+#if there is no input file, print a usage note to stderr w exit code 1
+if [ "$#" -lt 1 ] 
+then 
+  echo "Usage: spellcheck filename ..." 1>&2
+  exit 1
+
+else
+    for i in "${@:1}"
+       do
+      #Check if inputted files exist , print error message if they don't and skip argument
+       if [ ! -f "$i" ]
+       then
+           echo "./spellcheck error: $i does not exist - skipping." 1>&2
+	   shift
+	   continue
+       else
+	   #if <FILE>.spelling does not exist, print message that the script is creating it
+	   if [ ! -f "$i.spelling" ]
+	   then
+	       echo "./spellcheck creating $i.spelling file" >&1
+	       touch "$i.spelling"
+	   #file already exists, prints message that the file is replaced 
+	   elif [ -f "$i.spelling" ]
+	   then
+	       echo "./spellcheck replacing $i.spelling file" >&1
+	       > "$i.spelling"
+	   fi
+	   #Checks  if the word has a spelling error. If word has spelling error, append it to spelling file.
+	   #Variable SPELLERR keeps tracking of number of spelling errors added to spelling file and UNIQUEERR keeps
+	   #track of number of unique spelling errors added to spelling file
+	   SPELLERR=0;
+	   UNIQUEERR=0;
+	   
+	   for word in $(cat "$i")
+	   do
+	       if !( grep -i -q "^$word$" /usr/share/dict/words ); then
+		   SPELLERR=$((SPELLERR+1))
+		   if !( grep -i -q "^$word$" "$i.spelling" ); then
+		       UNIQUEERR=$((UNIQUEERR+1))
+		   fi
+
+		   echo "$word" >> "$i.spelling"
+	       fi
+	   done
+	 
+	   #prints message that displays the number of words found and number of unique words found
+	   echo "./spellcheck processed processed $i and found $SPELLERR spelling errors $UNIQUEERR of which are unique."
+       fi
+    done
+fi
+exit 0
